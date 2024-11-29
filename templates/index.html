@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Montserrat', Arial, sans-serif; 
+            margin: 20px; 
+            line-height: 1.6; 
+        }
+
+        input, button { 
+            padding: 10px; 
+            margin: 5px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            font-family: 'Montserrat', Arial, sans-serif; 
+            font-weight: bold; 
+        }
+
+        button { 
+            background-color: #007BFF; 
+            color: white; 
+            cursor: pointer; 
+        }
+
+        button:hover { 
+            background-color: #0056b3; 
+        }
+
+        h1, h2 { 
+            color: #333; 
+            font-family: 'Montserrat', Arial, sans-serif; 
+            font-weight: bold; 
+        }
+
+        h2 { 
+            margin-top: 10px;
+        }
+
+        .container { 
+            max-width: 800px; 
+            margin: auto; 
+        }
+
+        .results { 
+            margin-top: 20px; 
+            border: 1px solid #ccc; 
+            padding: 15px; 
+            background-color: #f9f9f9; 
+            border-radius: 10px;
+        }
+
+        nav { 
+            margin-bottom: 20px; 
+        }
+
+        a { 
+            margin-right: 15px; 
+            text-decoration: none; 
+            color: #007BFF; 
+        }
+
+        a:hover { 
+            text-decoration: underline; 
+        }
+
+        .flight-option { 
+            border: 1px solid #ccc; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-radius: 10px; 
+            background-color: #fff; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+        }
+
+        .route { 
+            display: flex; 
+            align-items: center; 
+            flex: 2; 
+        }
+
+        .airport-box { 
+            display: inline-block; 
+            width: 50px; 
+            height: 30px; 
+            margin: 0 5px; 
+            background-color: #007BFF; 
+            color: white; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            text-align: center; 
+            line-height: 30px; 
+        }
+
+        .plane-symbol { 
+            margin: 0 5px; 
+            color: #666; 
+            font-size: 18px; 
+        }
+
+        .price-section { 
+            flex: 1; 
+            display: flex; 
+            justify-content: space-around; 
+            text-align: center; 
+        }
+
+        .price-column { 
+            font-weight: bold; 
+        }
+
+        .price-header { 
+            font-size: 14px; 
+            font-weight: bold; 
+            color: #666; 
+            margin-bottom: 5px; 
+        }
+
+        /* Responsive Design */
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .flight-option {
+                flex-direction: column;
+                align-items: flex-start;
+                box-sizing: border-box;
+            }
+
+            .route {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .airport-box {
+                flex-shrink: 0;
+                max-width: 100%;
+                margin: 0 5px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+
+            .price-section {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+                text-align: left;
+                margin-top: 10px;
+            }
+
+            .price-column {
+                width: 48%;
+                margin-bottom: 10px;
+            }
+
+            .price-column .price-header {
+                font-size: 14px;
+                font-weight: bold;
+                color: #666;
+                margin-bottom: 5px;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+        </nav>
+        <h1>Flight Search</h1>
+        <form method="POST">
+            <label for="origin">Origin:</label>
+            <input type="text" id="origin" name="origin" placeholder="Enter origin airport" required>
+
+            <label for="destination">Destination:</label>
+            <input type="text" id="destination" name="destination" placeholder="Enter destination airport" required>
+
+            <button type="submit">Search Flights</button>
+        </form>
+
+        <style>
+            input[type="text"] {
+                width: 180px;
+                padding: 8px;
+            }
+        </style>
+
+
+        <div class="results {% if not results %}hidden{% endif %}">
+            {% if results %}
+                <h2>Flight Options</h2>
+                {% for result in results %}
+                    <div class="flight-option">
+                        <!-- Flight Route -->
+                        <div class="route">
+                            {% for airport in result.itinerary.split('->') %}
+                                <span class="airport-box">{{ airport }}</span>
+                                {% if not loop.last %}
+                                    <span class="plane-symbol">✈︎</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- Prices Section -->
+                        <div class="price-section">
+                            <div class="price-column">
+                                <div class="price-header">Basic</div>
+                                ${{ result.price }}
+                            </div>
+                            <div class="price-column">
+                                <div class="price-header">Flexi</div>
+                                ${{ (result.price * 1.6 + 30) | int }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% elif results is not none %}
+                <p>No flights found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+
+
+
